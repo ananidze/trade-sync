@@ -32,6 +32,20 @@ cd ..
 # Wait for backend to start
 sleep 2
 
+# Check if frontend dependencies are installed
+if [ ! -d "frontend/node_modules" ]; then
+    echo -e "${BLUE}Installing frontend dependencies...${NC}"
+    cd frontend
+    npm install
+    cd ..
+fi
+
+# Check if frontend .env.local exists
+if [ ! -f "frontend/.env.local" ]; then
+    echo -e "${BLUE}Creating frontend .env.local from example...${NC}"
+    cp frontend/.env.example frontend/.env.local
+fi
+
 # Start frontend
 echo -e "${GREEN}Starting Next.js frontend on port 3000...${NC}"
 cd frontend
