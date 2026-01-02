@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -62,6 +64,10 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) generateUserID() string {
+	buf := make([]byte, 16)
+	if _, err := rand.Read(buf); err == nil {
+		return fmt.Sprintf("user-%s", hex.EncodeToString(buf))
+	}
 	return fmt.Sprintf("user-%d", time.Now().UnixNano())
 }
 

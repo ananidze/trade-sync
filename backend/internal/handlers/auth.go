@@ -17,16 +17,19 @@ import (
 	"github.com/pquerna/otp/totp"
 	"github.com/skip2/go-qrcode"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 type userStore struct {
-	mu    sync.RWMutex
-	users map[string]*models.User
+	mu        sync.RWMutex
+	users     map[string]*models.User
+	usersByID map[string]*models.User
 }
 
 func newUserStore() *userStore {
 	return &userStore{
-		users: make(map[string]*models.User),
+		users:     make(map[string]*models.User),
+		usersByID: make(map[string]*models.User),
 	}
 }
 
@@ -40,18 +43,16 @@ func (s *userStore) getByEmail(email string) (*models.User, bool) {
 func (s *userStore) getByID(id string) (*models.User, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	for _, u := range s.users {
-		if u.ID == id {
-			return u, true
-		}
-	}
-	return nil, false
+	u, ok := s.usersByID[id]
+	return u, ok
 }
 
 func (s *userStore) save(user *models.User) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.users[strings.ToLower(user.Email)] = user
+	key := strings.ToLower(user.Email)
+	s.users[key] = user
+	s.usersByID[user.ID] = user
 }
 
 func (s *userStore) update(user *models.User) {
@@ -138,7 +139,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	user.LastLogin = &now
 	h.users.update(user)
 
-	if user.TwoFAEnabled && user.TwoFASecret != "" {
+	if user.TwoFAEnabled {
 		pendingToken, err := h.createToken(user, false, "pending_2fa", 5*time.Minute)
 		if err != nil {
 			http.Error(w, "failed to create session", http.StatusInternalServerError)
@@ -246,14 +247,20 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
-		if claims.TokenType != "access" || !claims.TwoFAVerified {
-			http.Error(w, "two-factor authentication required", http.StatusUnauthorized)
-			return
-		}
 
 		user, ok := h.users.getByID(claims.UserID)
 		if !ok {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		if claims.TokenType != "access" {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		if user.TwoFAEnabled && !claims.TwoFAVerified {
+			http.Error(w, "two-factor authentication required", http.StatusUnauthorized)
 			return
 		}
 
@@ -314,7 +321,11 @@ func userFromContext(ctx context.Context) *models.User {
 func loadJWTSecret() []byte {
 	secret := os.Getenv("JWT_SECRET")
 	if secret == "" {
+		if os.Getenv("GO_ENV") == "production" {
+			panic("JWT_SECRET must be set in production")
+		}
 		secret = "dev-secret-change-me"
+		log.Println("warning: using default development JWT secret; set JWT_SECRET to override")
 	}
 	return []byte(secret)
 }

@@ -30,4 +30,3 @@ export const authStorage = {
     localStorage.removeItem(PENDING_TOKEN_KEY);
   },
 };
-

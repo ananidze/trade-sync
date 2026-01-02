@@ -36,7 +36,8 @@ export default function DashboardPage() {
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to load data';
         setError(message);
-        if (message.toLowerCase().includes('unauthorized')) {
+        const status = (err as { status?: number })?.status;
+        if (status === 401 || message.toLowerCase().includes('unauthorized')) {
           authStorage.clearAll();
           router.replace('/login');
         }

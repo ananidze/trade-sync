@@ -33,7 +33,7 @@ export default function RegisterPage() {
       await apiClient.register(email, password);
       authStorage.clearAll();
       setSuccess('Account created! Redirecting to login...');
-      setTimeout(() => router.push('/login'), 800);
+      router.push('/login');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {

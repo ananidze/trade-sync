@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api-client';
@@ -31,8 +32,10 @@ export default function SetupTwoFAPage() {
         setSecret(setup.secret);
         setQrCode(setup.qrCode);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to start 2FA setup');
-        if ((err as Error)?.message?.includes('Unauthorized')) {
+        const message = err instanceof Error ? err.message : 'Failed to start 2FA setup';
+        const status = (err as { status?: number })?.status;
+        setError(message);
+        if (status === 401 || message.toLowerCase().includes('unauthorized')) {
           router.replace('/login');
         }
       }
@@ -68,8 +71,13 @@ export default function SetupTwoFAPage() {
           <div className="space-y-4">
             <div className="rounded-lg border border-dashed border-muted-foreground/40 p-4 text-center bg-muted/10">
               {qrCode ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={qrCode} alt="2FA QR code" className="mx-auto h-64 w-64" />
+                <Image
+                  src={qrCode}
+                  alt="2FA QR code"
+                  width={256}
+                  height={256}
+                  className="mx-auto h-64 w-64"
+                />
               ) : (
                 <p className="text-muted-foreground text-sm">Generating QR code...</p>
               )}

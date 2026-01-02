@@ -29,7 +29,7 @@ export class ApiClient {
     endpoint: string,
     options: RequestInit = {},
     token?: string
-  ): Promise<T> {
+  ): Promise<T | null> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
       headers: {
@@ -40,51 +40,66 @@ export class ApiClient {
     });
 
     if (!response.ok) {
-      throw new Error(`API Error: ${response.statusText}`);
+      const error = new Error(`API Error: ${response.statusText}`) as Error & { status?: number };
+      error.status = response.status;
+      throw error;
     }
 
     if (response.status === 204) {
-      // @ts-expect-error allow void responses
       return null;
     }
     return response.json() as Promise<T>;
   }
 
   async getAccounts(): Promise<PropFirmAccount[]> {
-    return this.request<PropFirmAccount[]>('/accounts');
+    const res = await this.request<PropFirmAccount[]>('/accounts');
+    return res ?? [];
   }
 
   async getTrades(): Promise<Trade[]> {
-    return this.request<Trade[]>('/trades');
+    const res = await this.request<Trade[]>('/trades');
+    return res ?? [];
   }
 
   async getStats(): Promise<DashboardStats> {
-    return this.request<DashboardStats>('/stats');
+    const res = await this.request<DashboardStats>('/stats');
+    if (!res) {
+      throw new Error('No stats available');
+    }
+    return res;
   }
 
   async register(email: string, password: string) {
-    return this.request<{ message: string }>('/register', {
+    const res = await this.request<{ message: string }>('/register', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
+    if (!res) throw new Error('Registration failed');
+    return res;
   }
 
   async login(email: string, password: string): Promise<LoginResponse> {
-    return this.request<LoginResponse>('/login', {
+    const res = await this.request<LoginResponse>('/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
+    if (!res) throw new Error('Login failed');
+    return res;
   }
 
   async enableTwoFA(): Promise<TwoFASetupResponse> {
-    return this.request<TwoFASetupResponse>('/2fa/enable', { method: 'POST' });
+    const res = await this.request<TwoFASetupResponse>('/2fa/enable', { method: 'POST' });
+    if (!res) throw new Error('Failed to start 2FA');
+    return res;
   }
 
   async verifyTwoFA(code: string, token?: string): Promise<{ token: string }> {
-    return this.request<{ token: string }>('/2fa/verify', {
+    const res = await this.request<{ token: string }>('/2fa/verify', {
       method: 'POST',
       body: JSON.stringify({ code }),
     }, token);
+    if (!res) throw new Error('Verification failed');
+    return res;
   }
 }
 
