@@ -58,12 +58,17 @@ trade-sync/
    cd backend
    ```
 
-2. Install dependencies (if needed):
+2. Copy the example environment file (optional):
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Install dependencies (if needed):
    ```bash
    go mod download
    ```
 
-3. Run the server:
+4. Run the server:
    ```bash
    go run cmd/server/main.go
    ```
@@ -77,12 +82,17 @@ trade-sync/
    cd frontend
    ```
 
-2. Install dependencies:
+2. Copy the example environment file:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+3. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Run the development server:
+4. Run the development server:
    ```bash
    npm run dev
    ```
@@ -91,7 +101,20 @@ trade-sync/
 
 ### Running Both Services
 
-You can run both services simultaneously in separate terminal windows:
+#### Quick Start (Recommended)
+
+Use the included startup script to run both services simultaneously:
+
+```bash
+chmod +x start.sh
+./start.sh
+```
+
+This will start both the backend and frontend services. Press Ctrl+C to stop all services.
+
+#### Manual Start
+
+You can also run both services manually in separate terminal windows:
 
 **Terminal 1 (Backend):**
 ```bash
