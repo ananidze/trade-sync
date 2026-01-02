@@ -89,13 +89,13 @@ export default function DashboardPage() {
               </Link>
             </div>
             <nav className="flex items-center gap-4">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="bg-accent">
                 Dashboard
               </Button>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" disabled>
                 Accounts
               </Button>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" disabled>
                 Analytics
               </Button>
             </nav>

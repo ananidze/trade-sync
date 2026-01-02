@@ -22,11 +22,6 @@ export default function Home() {
               Go to Dashboard
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 h-auto">
-            <Link href="/dashboard">
-              View Demo
-            </Link>
-          </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-12 w-full">
           <div className="text-center space-y-2">
