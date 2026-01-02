@@ -22,6 +22,16 @@ export default function Home() {
               Go to Dashboard
             </Link>
           </Button>
+          <Button asChild variant="outline" size="lg" className="text-lg px-8 py-6 h-auto">
+            <Link href="/login">
+              Login
+            </Link>
+          </Button>
+          <Button asChild variant="secondary" size="lg" className="text-lg px-8 py-6 h-auto">
+            <Link href="/register">
+              Register
+            </Link>
+          </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-12 w-full">
           <div className="text-center space-y-2">

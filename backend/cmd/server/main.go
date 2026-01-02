@@ -45,9 +45,17 @@ func main() {
 
 	// API routes
 	r.Route("/api", func(r chi.Router) {
-		r.Get("/accounts", h.GetAccounts)
-		r.Get("/trades", h.GetTrades)
-		r.Get("/stats", h.GetStats)
+		r.Post("/register", h.Register)
+		r.Post("/login", h.Login)
+		r.Post("/2fa/verify", h.VerifyTwoFA)
+
+		r.Group(func(r chi.Router) {
+			r.Use(h.AuthMiddleware)
+			r.Get("/accounts", h.GetAccounts)
+			r.Get("/trades", h.GetTrades)
+			r.Get("/stats", h.GetStats)
+			r.Post("/2fa/enable", h.EnableTwoFA)
+		})
 	})
 
 	// Start server

@@ -34,3 +34,14 @@ export interface DashboardStats {
   activeAccounts: number;
   openTrades: number;
 }
+
+export interface LoginResponse {
+  requires2fa: boolean;
+  token: string;
+}
+
+export interface TwoFASetupResponse {
+  secret: string;
+  otpauthUrl: string;
+  qrCode: string;
+}

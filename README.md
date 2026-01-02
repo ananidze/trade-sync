@@ -7,10 +7,7 @@ TradeSync is a platform that connects multiple prop firm accounts into a single 
 ```
 trade-sync/
 ├── frontend/          # Next.js frontend application
-│   ├── app/           # Next.js app directory
-│   │   ├── dashboard/ # Dashboard page
-│   │   ├── layout.tsx # Root layout
-│   │   └── page.tsx   # Home page
+│   ├── app/           # Next.js app directory (home, login, register, dashboard, 2FA)
 │   ├── components/    # React components
 │   ├── lib/           # Utility functions and API client
 │   └── public/        # Static assets
@@ -18,7 +15,7 @@ trade-sync/
 │   ├── cmd/
 │   │   └── server/    # Main server application
 │   └── internal/
-│       ├── handlers/  # HTTP handlers
+│       ├── handlers/  # HTTP handlers and auth
 │       └── models/    # Data models
 └── README.md
 ```
@@ -28,6 +25,7 @@ trade-sync/
 - **Unified Dashboard**: View all your prop firm accounts in one place
 - **Real-time Stats**: Monitor total balance, equity, P&L, and more
 - **Account Overview**: Detailed table with account information and performance metrics
+- **Secure Auth**: Email/password login with JWT-based sessions and TOTP 2FA
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 - **Modern Tech Stack**: Built with Next.js 16 and Go with Chi router
 
@@ -133,6 +131,10 @@ npm run dev
 The backend provides the following REST API endpoints:
 
 - `GET /health` - Health check endpoint
+- `POST /api/register` - Register with email/password
+- `POST /api/login` - Login and receive JWT or pending token if 2FA is enabled
+- `POST /api/2fa/enable` - (Protected) Generate TOTP secret + QR for the authenticated user
+- `POST /api/2fa/verify` - Verify TOTP code to enable/complete 2FA
 - `GET /api/accounts` - Get all prop firm accounts
 - `GET /api/trades` - Get all trades
 - `GET /api/stats` - Get dashboard statistics
@@ -148,7 +150,10 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 ### Backend
 
 ```env
-PORT=8080  # Optional, defaults to 8080
+PORT=8080
+JWT_SECRET=change-me
+TOTP_ISSUER=TradeSync
+JWT_TTL_HOURS=24
 ```
 
 ## Development
@@ -166,6 +171,12 @@ PORT=8080  # Optional, defaults to 8080
 - **Format**: `go fmt ./...`
 - **Test**: `go test ./...`
 
+## Authentication & 2FA
+
+1. Register a user at `/register` or via `POST /api/register`.
+2. Login at `/login`. If the user has 2FA enabled, a pending token will redirect you to `/2fa/verify`.
+3. To enable 2FA, visit `/2fa/setup` after logging in to generate a QR code and verify a code from your authenticator app.
+
 ## Mock Data
 
 The backend currently uses mock data for demonstration purposes. The mock data includes:
@@ -177,7 +188,6 @@ The backend currently uses mock data for demonstration purposes. The mock data i
 ## Future Enhancements
 
 - Real prop firm API integrations
-- User authentication and authorization
 - Trade journal and notes
 - Advanced analytics and charts
 - Performance metrics and risk analysis
@@ -191,4 +201,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License.
-
