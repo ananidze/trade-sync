@@ -10,26 +10,26 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, change, positive }: StatsCardProps) {
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
           {title}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-baseline gap-2">
-          <p className="text-2xl font-bold">
+        <div className="flex items-baseline gap-3">
+          <p className="text-3xl font-bold tracking-tight">
             {value}
           </p>
           {change && (
             <span
-              className={`text-sm font-medium ${
+              className={`text-base font-semibold flex items-center ${
                 positive
-                  ? 'text-green-600 dark:text-green-400'
-                  : 'text-red-600 dark:text-red-400'
+                  ? 'text-green-500'
+                  : 'text-red-500'
               }`}
             >
-              {change}
+              {positive ? '↑' : '↓'} {change}
             </span>
           )}
         </div>
@@ -52,7 +52,7 @@ export function DashboardStatsCards({ stats }: DashboardStatsProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <StatsCard
         title="Total Balance"
         value={formatCurrency(stats.totalBalance)}

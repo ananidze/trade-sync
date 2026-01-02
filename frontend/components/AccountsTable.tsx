@@ -42,52 +42,52 @@ export function AccountsTable({ accounts }: AccountsTableProps) {
   };
 
   return (
-    <Card>
+    <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle>Prop Firm Accounts</CardTitle>
+        <CardTitle className="text-2xl">Prop Firm Accounts</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Firm</TableHead>
-              <TableHead>Account</TableHead>
-              <TableHead className="text-right">Balance</TableHead>
-              <TableHead className="text-right">Equity</TableHead>
-              <TableHead className="text-right">Daily P&L</TableHead>
-              <TableHead className="text-right">Drawdown</TableHead>
-              <TableHead>Status</TableHead>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="font-semibold">Firm</TableHead>
+              <TableHead className="font-semibold">Account</TableHead>
+              <TableHead className="text-right font-semibold">Balance</TableHead>
+              <TableHead className="text-right font-semibold">Equity</TableHead>
+              <TableHead className="text-right font-semibold">Daily P&L</TableHead>
+              <TableHead className="text-right font-semibold">Drawdown</TableHead>
+              <TableHead className="font-semibold">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {accounts.map((account) => (
-              <TableRow key={account.id}>
-                <TableCell className="font-medium">
+              <TableRow key={account.id} className="hover:bg-accent/50">
+                <TableCell className="font-semibold">
                   {account.firmName}
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground font-mono text-sm">
                   {account.accountNumber}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right font-medium">
                   {formatCurrency(account.balance)}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right font-medium">
                   {formatCurrency(account.equity)}
                 </TableCell>
                 <TableCell
-                  className={`text-right font-medium ${
+                  className={`text-right font-bold ${
                     account.dailyPnL >= 0
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-red-600 dark:text-red-400'
+                      ? 'text-green-500'
+                      : 'text-red-500'
                   }`}
                 >
                   {formatCurrency(account.dailyPnL)}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right font-medium">
                   {formatPercentage(account.drawdown, account.maxDrawdown)}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getStatusVariant(account.status)}>
+                  <Badge variant={getStatusVariant(account.status)} className="font-medium">
                     {account.status}
                   </Badge>
                 </TableCell>
