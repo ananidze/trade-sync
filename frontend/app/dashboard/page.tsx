@@ -5,6 +5,7 @@ import { apiClient } from '@/lib/api-client';
 import { PropFirmAccount, DashboardStats } from '@/lib/types';
 import { DashboardStatsCards } from '@/components/DashboardStats';
 import { AccountsTable } from '@/components/AccountsTable';
+import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
   const [accounts, setAccounts] = useState<PropFirmAccount[]>([]);
@@ -35,10 +36,10 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-          <p className="mt-4 text-zinc-600 dark:text-zinc-400">Loading dashboard...</p>
+          <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -46,9 +47,9 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-zinc-50 dark:bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-600 dark:text-red-400 mb-4">
+          <div className="text-destructive mb-4">
             <svg
               className="inline-block h-12 w-12"
               fill="none"
@@ -63,29 +64,26 @@ export default function DashboardPage() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50 mb-2">
+          <h2 className="text-xl font-semibold mb-2">
             Error Loading Dashboard
           </h2>
-          <p className="text-zinc-600 dark:text-zinc-400 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-zinc-900 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors"
-          >
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>
             Retry
-          </button>
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-3xl font-bold">
             Trading Dashboard
           </h1>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-muted-foreground">
             Monitor your prop firm accounts in one place
           </p>
         </div>

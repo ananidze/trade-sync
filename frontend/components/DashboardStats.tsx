@@ -1,4 +1,5 @@
 import { DashboardStats } from '@/lib/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StatsCardProps {
   title: string;
@@ -9,27 +10,31 @@ interface StatsCardProps {
 
 function StatsCard({ title, value, change, positive }: StatsCardProps) {
   return (
-    <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-6 border border-zinc-200 dark:border-zinc-800">
-      <h3 className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
-        {title}
-      </h3>
-      <div className="flex items-baseline gap-2">
-        <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-          {value}
-        </p>
-        {change && (
-          <span
-            className={`text-sm font-medium ${
-              positive
-                ? 'text-green-600 dark:text-green-400'
-                : 'text-red-600 dark:text-red-400'
-            }`}
-          >
-            {change}
-          </span>
-        )}
-      </div>
-    </div>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-baseline gap-2">
+          <p className="text-2xl font-bold">
+            {value}
+          </p>
+          {change && (
+            <span
+              className={`text-sm font-medium ${
+                positive
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-red-600 dark:text-red-400'
+              }`}
+            >
+              {change}
+            </span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
