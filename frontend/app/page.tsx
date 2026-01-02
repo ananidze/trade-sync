@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-secondary/20">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <main className="flex flex-col items-center justify-center gap-12 text-center px-8 max-w-4xl">
         <div className="space-y-6">
           <div className="inline-block">
-            <h1 className="text-7xl font-bold bg-gradient-to-r from-primary via-blue-400 to-primary bg-clip-text text-transparent">
+            <h1 className="text-7xl font-bold text-primary">
               TradeSync
             </h1>
           </div>
