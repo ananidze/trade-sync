@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { PropFirmAccount, DashboardStats } from '@/lib/types';
 import { DashboardStatsCards } from '@/components/DashboardStats';
 import { AccountsTable } from '@/components/AccountsTable';
 import { Button } from '@/components/ui/button';
+import { authStorage } from '@/lib/auth';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [accounts, setAccounts] = useState<PropFirmAccount[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -16,6 +19,11 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function fetchData() {
+      const token = authStorage.getToken();
+      if (!token) {
+        router.replace('/login');
+        return;
+      }
       try {
         setLoading(true);
         const [accountsData, statsData] = await Promise.all([
@@ -26,14 +34,25 @@ export default function DashboardPage() {
         setStats(statsData);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load data');
+        const message = err instanceof Error ? err.message : 'Failed to load data';
+        setError(message);
+        const status = (err as { status?: number })?.status;
+        if (status === 401 || message.toLowerCase().includes('unauthorized')) {
+          authStorage.clearAll();
+          router.replace('/login');
+        }
       } finally {
         setLoading(false);
       }
     }
 
     fetchData();
-  }, []);
+  }, [router]);
+
+  const handleLogout = () => {
+    authStorage.clearAll();
+    router.push('/login');
+  };
 
   if (loading) {
     return (
@@ -89,14 +108,12 @@ export default function DashboardPage() {
               </Link>
             </div>
             <nav className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" className="bg-accent">
-                Dashboard
+              <Button variant="ghost" size="sm" className="bg-accent">Dashboard</Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/2fa/setup">2FA Setup</Link>
               </Button>
-              <Button variant="ghost" size="sm" disabled>
-                Accounts
-              </Button>
-              <Button variant="ghost" size="sm" disabled>
-                Analytics
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
+                Logout
               </Button>
             </nav>
           </div>

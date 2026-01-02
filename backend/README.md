@@ -17,10 +17,12 @@ backend/
 │       └── main.go
 ├── internal/
 │   ├── handlers/        # HTTP request handlers
+│   │   ├── auth.go
 │   │   ├── handlers.go
 │   │   └── mock_data.go
 │   └── models/          # Data models
-│       └── models.go
+│       ├── models.go
+│       └── user.go
 ├── go.mod
 └── go.sum
 ```
@@ -64,17 +66,16 @@ go build -o bin/server cmd/server/main.go
 - **GET** `/health`
 - Returns server status
 
-### Accounts
+### Authentication & 2FA
+- **POST** `/api/register` - Register with email and password
+- **POST** `/api/login` - Login and receive JWT or a pending token when 2FA is enabled
+- **POST** `/api/2fa/enable` - (Protected) Generate a TOTP secret and QR code for the user
+- **POST** `/api/2fa/verify` - Verify a TOTP code to activate or satisfy 2FA
+
+### Protected Resources (JWT + 2FA)
 - **GET** `/api/accounts`
-- Returns all prop firm accounts with balances, equity, P&L, etc.
-
-### Trades
 - **GET** `/api/trades`
-- Returns all trades (open and closed)
-
-### Statistics
 - **GET** `/api/stats`
-- Returns aggregated dashboard statistics
 
 ## Mock Data
 
@@ -86,7 +87,12 @@ The application currently uses mock data defined in `internal/handlers/mock_data
 
 ## Environment Variables
 
+Copy `.env.example` to `.env` and update as needed.
+
 - `PORT` - Server port (default: 8080)
+- `JWT_SECRET` - Secret key used to sign JWT tokens
+- `TOTP_ISSUER` - Issuer label shown in authenticator apps (default: TradeSync)
+- `JWT_TTL_HOURS` - Access token lifetime in hours (default: 24)
 
 ## Development
 
