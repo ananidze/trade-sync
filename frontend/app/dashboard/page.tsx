@@ -1,148 +1,55 @@
-'use client';
+import { AppSidebar } from "@/components/app-sidebar"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { apiClient } from '@/lib/api-client';
-import { PropFirmAccount, DashboardStats } from '@/lib/types';
-import { DashboardStatsCards } from '@/components/DashboardStats';
-import { AccountsTable } from '@/components/AccountsTable';
-import { Button } from '@/components/ui/button';
-import { authStorage } from '@/lib/auth';
-
-export default function DashboardPage() {
-  const router = useRouter();
-  const [accounts, setAccounts] = useState<PropFirmAccount[]>([]);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchData() {
-      const token = authStorage.getToken();
-      if (!token) {
-        router.replace('/login');
-        return;
-      }
-      try {
-        setLoading(true);
-        const [accountsData, statsData] = await Promise.all([
-          apiClient.getAccounts(),
-          apiClient.getStats(),
-        ]);
-        setAccounts(accountsData);
-        setStats(statsData);
-        setError(null);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to load data';
-        setError(message);
-        const status = (err as { status?: number })?.status;
-        if (status === 401 || message.toLowerCase().includes('unauthorized')) {
-          authStorage.clearAll();
-          router.replace('/login');
-        }
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [router]);
-
-  const handleLogout = () => {
-    authStorage.clearAll();
-    router.push('/login');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-          <p className="mt-4 text-muted-foreground text-lg">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center max-w-md">
-          <div className="text-destructive mb-4">
-            <svg
-              className="inline-block h-16 w-16"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-semibold mb-3">
-            Error Loading Dashboard
-          </h2>
-          <p className="text-muted-foreground mb-6">{error}</p>
-          <Button onClick={() => window.location.reload()} size="lg">
-            Retry
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
+export default function Page() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 backdrop-blur-sm bg-card/50 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="text-2xl font-bold text-primary">
-                TradeSync
-              </Link>
-            </div>
-            <nav className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" className="bg-accent">Dashboard</Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/2fa/setup">2FA Setup</Link>
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                Logout
-              </Button>
-            </nav>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">
+                    Building Your Application
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+            <div className="bg-muted/50 aspect-video rounded-xl" />
+          </div>
+          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold mb-2 text-foreground">
-            Trading Dashboard
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Monitor your prop firm accounts in one place
-          </p>
-        </div>
-
-        {stats && (
-          <div className="mb-10">
-            <DashboardStatsCards stats={stats} />
-          </div>
-        )}
-
-        {accounts.length > 0 && (
-          <div className="mb-8">
-            <AccountsTable accounts={accounts} />
-          </div>
-        )}
-      </main>
-    </div>
-  );
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }
